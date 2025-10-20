@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+        <title>Industry Day Demo</title>
+        <!-- <link href="favicon.ico" rel="icon" type="image/x-icon"/> -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type=text/javascript src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+
+    </head>
+    <body>
+        <nav></nav>
+        <main class="main">
+            <div class="item-card">
+                <h2 class="card-text">Stand</h2>
+                <img src="static/images/stand.svg" class="image"/>                <button class="collection" onclick="turnOnGraph(this)" id="button_1">Collect</button>
+                <div class="graph" id="graph_1"><canvas id="graph_1_image"></canvas></div>
+            </div>
+            <div class="item-card">
+                <h2 class="card-text">Jumping Jacks</h2>
+                <img src="static/images/jumping_jacks.svg" class="image"/>
+                <button class="collection" onclick="turnOnGraph(this)" id="button_2">Collect</button>
+                <div class="graph" id="graph_2"><canvas id="graph_2_image"></canvas></div>
+            </div>
+
+            <!--
+                test
+            -->
+               <div></div> 
+        </main>
+    </body>
+</html>
