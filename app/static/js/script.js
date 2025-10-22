@@ -119,10 +119,10 @@ function update_chart(chart_number) {
 function turnOnGraph(caller) {
     id = caller.id;
 
-    on_req = {"push_data": true}
+    on_req = { "push_data": true }
     fetch("/recv-output", {
         method: "POST",
-        headers: {'Content-Type': 'application/json'}, 
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(on_req)
     });
     if (id == "button_1") {
@@ -168,10 +168,10 @@ function turnOnGraph(caller) {
 function turnOffGraph(caller) {
     all_children = caller.parentNode.children;
 
-    off_req = {"push_data": false}
+    off_req = { "push_data": false }
     fetch("/recv-output", {
         method: "POST",
-        headers: {'Content-Type': 'application/json'}, 
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(off_req)
     });
     for (const child of all_children) {
@@ -194,6 +194,53 @@ function turnOffGraph(caller) {
             }
         }
     }
+}
+
+
+
+
+async function updateExerciseStatus() {
+    try {
+        const url = (window && window.EXERCISE_URL) ? window.EXERCISE_URL : "/api/test";
+        const response = await fetch(url);
+        const data = await response.json();
+        const value = data.exercise;
+
+        const statusText = document.getElementById("exercise-status");
+        const imgEl = document.getElementById("exercise-image");
+
+        if (value === 0) {
+            statusText.textContent = "You are standing.";
+            if (imgEl) {
+                imgEl.src = (window && window.STAND_URL) ? window.STAND_URL : "/static/images/stand.svg";
+                imgEl.alt = "Standing";
+                imgEl.style.display = "block";
+            }
+        } else if (value === 1) {
+            statusText.textContent = "You are jumping!";
+            if (imgEl) {
+                imgEl.src = (window && window.JUMP_URL) ? window.JUMP_URL : "/static/images/jumping_jacks.svg";
+                imgEl.alt = "Jumping Jacks";
+                imgEl.style.display = "block";
+            }
+        } else {
+            statusText.textContent = "Unknown state.";
+            if (imgEl) {
+                imgEl.removeAttribute("src");
+                imgEl.style.display = "none";
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching exercise:", err);
+        document.getElementById("exercise-status").textContent = "Error loading status.";
+        const imgEl = document.getElementById("exercise-image");
+        if (imgEl) imgEl.style.display = "none";
+    }
+}
+
+setInterval(updateExerciseStatus, 2000);
+
+document.addEventListener("DOMContentLoaded", updateExerciseStatus);
 } 
 
 setInterval(() => {
