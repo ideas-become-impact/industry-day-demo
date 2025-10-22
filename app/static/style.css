@@ -67,6 +67,16 @@ body {
     background: #dfad8a;
 }
 
+.reset {
+    margin: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    font-size: 1.25rem;
+    background: #dfad8a;
+}
+
 #graph_1_image {
     transition: width 0.5s ease-in, display 2s ease-out;
 }
