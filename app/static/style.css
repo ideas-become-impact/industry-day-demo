@@ -6,9 +6,19 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     margin-top: 20%;
 }
 
+.foot {
+    bottom: 0;
+}
+
+.items-container {
+    display: flex; flex-direction: row;
+    width: 100%;
+    justify-content: center;
+}
 .item-card {
     margin: 2rem;
     display: flex;
@@ -35,10 +45,16 @@ body {
 
 .graph {
     margin: 1.25rem;
-    border: blue 2px solid;
+    /* border: blue 2px solid; */
     display: none;
     transition: display 2s ease-in-out;
     flex-grow: 2;
+    height: 200px;
+}
+
+.graph-data {
+    display: flex;
+    transition: display 2s ease-in-out;
 }
 
 .collection {
