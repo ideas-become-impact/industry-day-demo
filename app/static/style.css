@@ -1,5 +1,6 @@
 body {
     font-size: 100%;
+    display: block;
 }
 
 .main {
@@ -89,6 +90,9 @@ body {
     transition: width 0.5s ease-in;
 }
 
+.name {
+    font-size: 2rem;
+}
 
 
 body {

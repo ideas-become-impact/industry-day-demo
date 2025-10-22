@@ -14,7 +14,7 @@ ui: FlaskUI = FlaskUI(app=app, server="flask", width=500, height=500)
 
 push_data = True
 
-com_port = input("Input COM port: ")
+com_port = "COM12"
 
 ser = serial.Serial(com_port, 115200, timeout=1)
 
@@ -61,6 +61,14 @@ def data_route() -> Response:
 
     return jsonify(data) if push_data else jsonify([])
 
+
+@app.route("/arduino-read-data", methods=["GET"])
+def arduino_read_data() -> Response:
+
+    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.05)
+
+    return jsonify({"data": new_data})
+
     # data = [
     #     {"x": random.randint(0, 100), "y": random.randint(0, 100)},
     #     {"x": random.randint(0, 100), "y": random.randint(0, 100)},
@@ -80,7 +88,7 @@ def rest_button() -> Response:
         if current_state["collect"]:
             stand_dataset = run.rest_button_clicked(ser, stand_dataset)
             return jsonify({"data": stand_dataset})
-    
+
     return jsonify([])
 
 
@@ -96,18 +104,22 @@ def exercise_button() -> Response:
 
     return jsonify([])
 
+
 @app.route("/train", methods=["POST", "GET"])
 def train() -> Response:
     global stand_dataset, exercise_dataset, weights, bias
 
     if request.method == "POST":
-        is_available = request.json()["is_available"]
-        if (stand_dataset["state"]["filled"] and exercise_dataset["state"]["filled"]):
-            _, weights, bias = run.collect_and_train(ser, stand_dataset, exercise_dataset)
-            
+        is_available = request.get_json()["is_available"]
+        if stand_dataset["state"]["filled"] and exercise_dataset["state"]["filled"]:
+            _, weights, bias = run.collect_and_train(
+                ser, stand_dataset, exercise_dataset
+            )
+
             return jsonify({"ready": True})
-        
+
     return jsonify({"ready": False})
+
 
 @app.route("/jumping-data-route", methods=["POST"])
 def jumping_data_route() -> Response:
@@ -126,7 +138,7 @@ def jumping_data_route() -> Response:
     #     8,
     #     9,
     #     10,
-    # ] 
+    # ]
     new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.05)
     times = np.linspace(0, 1, len(new_data))
     if request.method == "POST":
@@ -158,6 +170,7 @@ def home() -> str:
 
     return render_template("home.html")
 
+
 @app.route("/test")
 def test() -> str:
     """
@@ -175,6 +188,7 @@ def exercise_status():
     # TODO: replace with your real logic returning 0 or 1
     return jsonify({"exercise": random.choice([0, 1])})
 
+
 @app.route("/predict", methods=["POST", "GET"])
 def predict_route() -> Response:
     global weights, bias
@@ -183,13 +197,16 @@ def predict_route() -> Response:
         # [data, data, data]
         data = request.get_json()["data"]
         prediction = predict(data, weights, bias)
-        state = 0 if prediction[0,0] <= 0.5 else 1
+        state = 0 if prediction[0, 0] <= 0.5 else 1
         return jsonify({"state": state})
 
     return jsonify([])
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    try:
+        app.run(debug=True)
+    finally:
+        ser.close()
     # ui.run()
     # hi

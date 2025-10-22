@@ -23,7 +23,9 @@ const options = {
         type: 'linear'
       },
       y: {
-        type: 'linear'
+        type: 'linear',
+        min: 400,
+        max: 600
       }
     },
     plugins: {
@@ -76,31 +78,57 @@ const chart2 = new Chart(
 charts.two = chart2;
 
 function update_chart(chart_number) {
-    elapsed_time = performance.now() / 1000.0 - start_time;
 
     switch (chart_number) {
         case 1:
-            time_addition = {"elapsed_time": elapsed_time}
-            fetch("/data-route", {
+            fetch("/rest-button", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(time_addition)
-            }).then(data => data.json()).then(new_data => {
-                charts.one.data.datasets[0].data = total_stand_data.concat(new_data);
-                total_stand_data = total_stand_data.concat(new_data);
+                body: JSON.stringify({"collect": true})
+            }).then(data => data.json()).then(data => data["data"]).then(new_data => {
+                time = new_data["time"];
+                raw_data = new_data["train"].flat(Infinity);
+       let chart_data_format_y = raw_data.map(value => {
+                    return {"y": value}
+                });
+                let chart_data_format_x = time.map(value => {
+                    return {"x": value}
+                });
+
+                let chart_data_format = []
+
+                for (let i = 0; i < chart_data_format_x.length; i++) {
+                    chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                }
+                charts.one.data.datasets[0].data = total_stand_data.concat(chart_data_format);
+                total_stand_data = total_stand_data.concat(chart_data_format);
                 charts.one.update();
             });
             break;
         case 2:
-            time_addition = {"elapsed_time": elapsed_time}
-            fetch("/jumping-data-route", {
+            fetch("/exercise-button", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(time_addition)
-            }).then(data => data.json()).then(new_data => {
-                charts.two.data.datasets[0].data = total_exercise_data.concat(new_data);
-                total_exercise_data = total_exercise_data.concat(new_data);
-                charts.two.update(); 
+                body: JSON.stringify({"collect": true})
+            }).then(data => data.json())(data => data["data"]).then(new_data => {
+                time = new_data["time"];
+                raw_data = new_data["train"].flat(Infinity);
+
+                let chart_data_format_y = raw_data.map(value => {
+                    return {"y": value}
+                });
+                let chart_data_format_x = time.map(value => {
+                    return {"x": value}
+                });
+
+                let chart_data_format = []
+
+                for (let i = 0; i < chart_data_format_x.length; i++) {
+                    chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                }
+                charts.two.data.datasets[0].data = total_exercise_data.concat(chart_data_format);
+                total_exercise_data = total_exercise_data.concat(chart_data_format);
+                charts.two.update();
             });
             break;
     }

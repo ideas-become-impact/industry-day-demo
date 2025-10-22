@@ -1,12 +1,15 @@
+
+let prediction_state = false;
+
+const statusText = document.getElementById("exercise-status");
+const imgEl = document.getElementById("exercise-image");
+
 async function updateExerciseStatus() {
     try {
         const url = (window && window.EXERCISE_URL) ? window.EXERCISE_URL : "/api/test";
         const response = await fetch(url);
         const data = await response.json();
         const value = data.exercise;
-
-        const statusText = document.getElementById("exercise-status");
-        const imgEl = document.getElementById("exercise-image");
 
         if (value === 0) {
             statusText.textContent = "You are standing.";
@@ -35,6 +38,36 @@ async function updateExerciseStatus() {
         const imgEl = document.getElementById("exercise-image");
         if (imgEl) imgEl.style.display = "none";
     }
+}
+
+async function can_predict() {
+    let is_available = true;
+
+    await fetch("/train", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({"is_available": is_available})
+            }).then(data => data.json()).then(data => {
+        if (data.ready) {
+            prediction_state = true;
+        }
+    });
+
+    if (prediction_state) {
+        imgEl.style.display = "block";
+    }
+}
+
+async function predict() {
+    const data = await fetch("/arduino-read-data").then(data => data.json()).then(data => data["data"]);
+
+    const prediction = await fetch("/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({"data": data})
+    }).then(data => data.json()).then(data => data["state"]);
+
+    return prediction
 }
 
 setInterval(updateExerciseStatus, 2000);
