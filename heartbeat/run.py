@@ -3,24 +3,24 @@ import matplotlib.pyplot as plt
 import get_heartbeat
 import model
 
-def rest_button_clicked():
+def rest_button_clicked(ser, training_dict):
     '''
     add this to existing function
     '''
-    train, output = get_heartbeat.get_heartbeat("COM4", 1)
-    return train, output
+    training_dict = get_heartbeat.get_heartbeat(ser, training_dict, 1)
+    return training_dict
 
-def exercise_button_clicked():
+def exercise_button_clicked(ser, training_dict):
     '''
     add this to existing function
     '''
-    train, output = get_heartbeat.get_heartbeat("COM4", 2)
-    return train, output
+    training_dict = get_heartbeat.get_heartbeat(ser, training_dict, 2)
+    return training_dict
 
-def collect_and_train():
+def collect_and_train(ser, stand_dataset, exercise_dataset):
 
-    rest_train, rest_output = rest_button_clicked()
-    exercise_train, exercise_output = exercise_button_clicked()
+    rest_train, rest_output = rest_button_clicked(ser, stand_dataset)
+    exercise_train, exercise_output = exercise_button_clicked(ser, exercise_dataset)
     train = rest_train + exercise_train
     output = rest_output + exercise_output
     X = np.array(train) # 10+10 samples, each 29 features
@@ -30,14 +30,16 @@ def collect_and_train():
 
     return costs, W, b
 
-costs, W, b = collect_and_train()
+# costs, W, b = collect_and_train()
+# print(W)
+# print(b)
 
-# test prediction on a random array
-X_test = np.array([472, 503, 491, 526, 459, 548, 512, 480, 499, 537, 455, 525, 467, 544, 510, 493, 482, 501, 529, 518, 460, 471, 523, 495, 509, 538, 486, 517, 504])
-y_pred = model.predict(X_test, W, b)
-state = 0 if y_pred[0,0] <= 0.5 else 1
+# # test prediction on a random array
+# X_test = np.array(get_heartbeat.get_latest_heartbeat('COM4'))
+# y_pred = model.predict(X_test, W, b)
+# state = 0 if y_pred[0,0] <= 0.5 else 1
 
-print(state)
+# print(state)
 
 
 # #plot
