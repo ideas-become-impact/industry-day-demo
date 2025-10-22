@@ -241,7 +241,7 @@ async function updateExerciseStatus() {
 setInterval(updateExerciseStatus, 2000);
 
 document.addEventListener("DOMContentLoaded", updateExerciseStatus);
-} 
+
 
 setInterval(() => {
     if (performance.now() / 1000.0 - start_time < 30) {
