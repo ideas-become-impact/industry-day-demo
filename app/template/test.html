@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Exercise Detector</title>
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // expose routes and asset URLs to JS
+        window.EXERCISE_URL = "{{ url_for('exercise_status') }}";
+        window.STAND_URL = "{{ url_for('static', filename='images/stand.svg') }}";
+        window.JUMP_URL = "{{ url_for('static', filename='images/jumping_jacks.svg') }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/test-script.js') }}" defer></script>
+</head>
+
+<body>
+    <main class="main" id="exercise-page">
+        <div class="item-card" id="status-card">
+            <p id="exercise-status">Loading...</p>
+            <img id="exercise-image" alt="Exercise status image" style="display:none; max-width: 240px;" />
+        </div>
+    </main>
+</body>
+
+</html>

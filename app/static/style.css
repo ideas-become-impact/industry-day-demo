@@ -15,10 +15,12 @@ body {
 }
 
 .items-container {
-    display: flex; flex-direction: row;
+    display: flex;
+    flex-direction: row;
     width: 100%;
     justify-content: center;
 }
+
 .item-card {
     margin: 2rem;
     display: flex;
@@ -34,9 +36,11 @@ body {
     min-width: 12rem;
     background: #FFE6A7;
 }
+
 .card-text {
     align-self: center;
 }
+
 .image {
     margin: 1.25rem;
     height: 100px;
@@ -67,10 +71,66 @@ body {
     background: #dfad8a;
 }
 
+.reset {
+    margin: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    font-size: 1.25rem;
+    background: #dfad8a;
+}
+
 #graph_1_image {
     transition: width 0.5s ease-in, display 2s ease-out;
 }
 
 #graph_2_image {
     transition: width 0.5s ease-in;
+}
+
+
+
+body {
+    font-family: "Rethink Sans", sans-serif;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.box {
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 40px 60px;
+    text-align: center;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+#exercise-page {
+    margin-top: 0;
+}
+
+#exercise-status {
+    font-size: 2.4rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 1rem 0;
+}
+
+#exercise-image {
+    display: block;
+    margin: 0 auto;
+    max-width: 320px;
+}
+
+#status-card {
+    width: 100%;
+    max-width: 560px;
+    text-align: center;
 }
