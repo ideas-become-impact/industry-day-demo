@@ -40,12 +40,14 @@ const data = fetch("/data_route").then(data => data.json()).then(data => {
         options: options
     };
 
-    const myChart = new Chart(
-        document.getElementById('graph_1_image'),
-        config,
-    );
-
-    charts.one = myChart;
+    const el1 = document.getElementById('graph_1_image');
+    if (el1 && window.Chart) {
+        const myChart = new Chart(
+            el1,
+            config,
+        );
+        charts.one = myChart;
+    }
 });
 
 
@@ -63,24 +65,30 @@ const data2 = fetch("/jumping-data-route").then(data => data.json()).then(data =
         options: options
     };
 
-    const myChart_2 = new Chart(
-        document.getElementById('graph_2_image'),
-        config
-    );
-
-    charts.two = myChart_2;
+    const el2 = document.getElementById('graph_2_image');
+    if (el2 && window.Chart) {
+        const myChart_2 = new Chart(
+            el2,
+            config
+        );
+        charts.two = myChart_2;
+    }
 
 });
 
 function update_chart(chart_number) {
     switch (chart_number) {
         case 1: fetch("/data_route").then(data => data.json()).then(new_data => {
-            charts.one.data.datasets[0].data = new_data;
-            charts.one.update();
+            if (charts.one) {
+                charts.one.data.datasets[0].data = new_data;
+                charts.one.update();
+            }
         });
         case 2: fetch("/jumping-data-route").then(data => data.json()).then(new_data => {
-            charts.two.data.datasets[0].data = new_data;
-            charts.two.update();
+            if (charts.two) {
+                charts.two.data.datasets[0].data = new_data;
+                charts.two.update();
+            }
         });
     }
 }
@@ -145,14 +153,60 @@ function turnOffGraph(caller) {
         if (child.classList.contains("graph")) {
             child.style.display = "none";
             console.log("happened! x3");
-            if (child.id == "graph_1") {
+            if (child.id == "graph_1" && charts.one) {
                 console.log("did hapepn!");
                 charts.one.config.data.datasets[0].data = [0, 0, 0, 0, 0];
                 charts.one.update();
-            } else if (child.id == "graph_2") {
+            } else if (child.id == "graph_2" && charts.two) {
                 charts.two.config.data.datasets[0].data = [0, 0, 0, 0, 0];
                 charts.two.update();
             }
         }
     }
 }
+
+
+
+
+async function updateExerciseStatus() {
+    try {
+        const url = (window && window.EXERCISE_URL) ? window.EXERCISE_URL : "/api/test";
+        const response = await fetch(url);
+        const data = await response.json();
+        const value = data.exercise;
+
+        const statusText = document.getElementById("exercise-status");
+        const imgEl = document.getElementById("exercise-image");
+
+        if (value === 0) {
+            statusText.textContent = "You are standing.";
+            if (imgEl) {
+                imgEl.src = (window && window.STAND_URL) ? window.STAND_URL : "/static/images/stand.svg";
+                imgEl.alt = "Standing";
+                imgEl.style.display = "block";
+            }
+        } else if (value === 1) {
+            statusText.textContent = "You are jumping!";
+            if (imgEl) {
+                imgEl.src = (window && window.JUMP_URL) ? window.JUMP_URL : "/static/images/jumping_jacks.svg";
+                imgEl.alt = "Jumping Jacks";
+                imgEl.style.display = "block";
+            }
+        } else {
+            statusText.textContent = "Unknown state.";
+            if (imgEl) {
+                imgEl.removeAttribute("src");
+                imgEl.style.display = "none";
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching exercise:", err);
+        document.getElementById("exercise-status").textContent = "Error loading status.";
+        const imgEl = document.getElementById("exercise-image");
+        if (imgEl) imgEl.style.display = "none";
+    }
+}
+
+setInterval(updateExerciseStatus, 2000);
+
+document.addEventListener("DOMContentLoaded", updateExerciseStatus);

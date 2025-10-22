@@ -79,6 +79,15 @@ def test() -> str:
     return render_template("test.html")
 
 
+@app.route("/api/test", methods=["GET"])
+def exercise_status():
+    """
+    API endpoint that returns the current exercise state.
+    """
+    # TODO: replace with your real logic returning 0 or 1
+    return jsonify({"exercise": random.choice([0, 1])})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
     # ui.run()
