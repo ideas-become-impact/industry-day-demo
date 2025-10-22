@@ -1,26 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import get_heartbeat
-import model
+import heartbeat.get_heartbeat as get_heartbeat
+import heartbeat.model as model
+
+rest_train, exercise_train, rest_output, exercise_output = [], [], [], []
+W, b = None, None
 
 def rest_button_clicked():
     '''
     add this to existing function
     '''
-    train, output = get_heartbeat.get_heartbeat("COM4", 1)
+    train, output = get_heartbeat.get_heartbeat("COM8", 1)
     return train, output
 
 def exercise_button_clicked():
     '''
     add this to existing function
     '''
-    train, output = get_heartbeat.get_heartbeat("COM4", 2)
+    train, output = get_heartbeat.get_heartbeat("COM8", 2)
     return train, output
 
 def collect_and_train():
-
-    rest_train, rest_output = rest_button_clicked()
-    exercise_train, exercise_output = exercise_button_clicked()
+    global rest_train, exercise_train, rest_output, exercise_output
     train = rest_train + exercise_train
     output = rest_output + exercise_output
     X = np.array(train) # 10+10 samples, each 29 features
@@ -30,21 +31,37 @@ def collect_and_train():
 
     return costs, W, b
 
-costs, W, b = collect_and_train()
 
-# test prediction on a random array
-X_test = np.array([472, 503, 491, 526, 459, 548, 512, 480, 499, 537, 455, 525, 467, 544, 510, 493, 482, 501, 529, 518, 460, 471, 523, 495, 509, 538, 486, 517, 504])
-y_pred = model.predict(X_test, W, b)
-state = 0 if y_pred[0,0] <= 0.5 else 1
+while True:
+    command = input("\nEnter command (stand / exercise / train / predict / quit): ").strip().lower()
 
-print(state)
+    if command == "stand":
+        rest_train, rest_output = rest_button_clicked()
+        print("Collected standing data.")
 
+    elif command == "exercise":
+        exercise_train, exercise_output = exercise_button_clicked()
+        print("Collected exercising data.")
 
-# #plot
-# epochs = range(1, len(costs) + 1)
-# plt.plot(epochs, costs)
-# plt.xlabel("Epoch")
-# plt.ylabel("Cost")
-# plt.title("Cost vs. Epoch")
-# plt.grid(True)
-# plt.show()
+    elif command == "train":
+        _, W, b = collect_and_train()
+        print("Training complete!")
+
+    elif command == "predict":
+        if W is None or b is None:
+            print("⚠️ Please train the model first.")
+            continue
+        X_test = np.array(get_heartbeat.get_latest_heartbeat("COM8")).reshape(1, -1)
+        y_pred = model.predict(X_test, W, b)
+        state = 0 if y_pred[0,0] <= 0.5 else 1
+        if state == 0:
+            print("You are standing.")
+        else:
+            print("You are exercising.")
+
+    elif command == "quit":
+        print("Exiting program.")
+        break
+
+    else:
+        print("Unknown command. Try again.")
