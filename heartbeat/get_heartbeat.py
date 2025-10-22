@@ -34,14 +34,15 @@ def get_heartbeat(ser: serial.Serial, data_holding_dict: dict, button_clicked: i
                 ser.readline().decode("utf-8").strip()
             )  # Read a line, decode, and remove whitespace
             data_holding_dict["time"].append(
-                data_holding_dict["state"]["base_time"] - time.time()
+                time.time() - data_holding_dict["state"]["base_time"]
             )
+            print("time: ", data_holding_dict["time"])
             hb_parts = line.split(",")  # ["512", "530", ...]
-            print(hb_parts[-1])  # "512"
+            print("values: ", sum(data_holding_dict["train"], []))
             data_holding_dict["train"][-1].append(int(hb_parts[-1]))
             if len(data_holding_dict["train"][-1]) == 29:
                 data_holding_dict["state"]["list_full"] = True
-            time.sleep(0.1)
+            time.sleep(0.005)
 
             if data_holding_dict["state"]["list_full"]:
                 data_holding_dict["train"].append([])
@@ -70,10 +71,10 @@ def get_heartbeat(ser: serial.Serial, data_holding_dict: dict, button_clicked: i
     if len(data_holding_dict["train"]) == 10:
         data_holding_dict["state"]["filled"] = True
         for i in range(len(data_holding_dict["train"])):
-            if i + 1 > len(data_holding_dict["train"]):
-                data_holding_dict["train"][i] = []
+            if i > len(data_holding_dict["train"]):
+                data_holding_dict["train"][i - 1] = []
             else:
-                data_holding_dict["train"][i] = data_holding_dict["train"][i + 1]
+                data_holding_dict["train"][i - 1] = data_holding_dict["train"][i]
 
     # ideally make button_clicked an int/bool, depends on what's easier to get from frontend
     if button_clicked == 1:  # resting clicked

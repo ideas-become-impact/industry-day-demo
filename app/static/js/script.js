@@ -7,8 +7,9 @@ const button_2 = document.getElementById("button_2")
 const data_colors = {
     backgroundColor: "#dfad8a",
     borderColor: "rgb(255, 0, 0)",
-    borderWidth: 5,
-    radius: 0,
+    pointBorderWidth: 2,
+    pointRadius: 2,
+    // radius: 0,
 }
 
 let start_time = performance.now()
@@ -86,22 +87,46 @@ function update_chart(chart_number) {
                 headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify({"collect": true})
             }).then(data => data.json()).then(data => data["data"]).then(new_data => {
+                charts.one.clear()
+                charts.one.update()
                 time = new_data["time"];
                 raw_data = new_data["train"].flat(Infinity);
-       let chart_data_format_y = raw_data.map(value => {
+                //                 console.log("made it through the pipeline!");
+                // console.log(time);
+                // console.log(raw_data);
+                let chart_data_format_y = raw_data.map(value => {
                     return {"y": value}
                 });
                 let chart_data_format_x = time.map(value => {
                     return {"x": value}
                 });
 
-                let chart_data_format = []
+                // console.log( )
+                // console.log(chart_data_format_x)
 
-                for (let i = 0; i < chart_data_format_x.length; i++) {
-                    chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                let chart_data_format = []
+                let initial_val = total_stand_data.length > 0
+                if (initial_val) {
+                    let final_obj = total_stand_data[total_stand_data.length - 1];
+                    // console.log(`total_stand_data);
+                    let final_time = final_obj.x
+                    arr_and_item = time.indexOf(final_time);
+                    // console.log(arr_and_item);
+                    for (let i =  arr_and_item; i < chart_data_format_x.length; i++) {
+                        chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                    }
+                } else {
+                    for (let i = 0; i < chart_data_format_x.length; i++) {
+                        chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                    }
+                    total_stand_data = chart_data_format;
                 }
-                charts.one.data.datasets[0].data = total_stand_data.concat(chart_data_format);
-                total_stand_data = total_stand_data.concat(chart_data_format);
+
+                // console.log(chart_data_format)
+                                    // console.log(total_stand_data.concat(chart_data_format));
+
+                charts.one.data.datasets[0].data = (initial_val) ? total_stand_data : total_stand_data.concat(chart_data_format);
+                total_stand_data =  (initial_val) ? total_stand_data.concat(chart_data_format) : chart_data_format;
                 charts.one.update();
             });
             break;
@@ -110,9 +135,14 @@ function update_chart(chart_number) {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify({"collect": true})
-            }).then(data => data.json())(data => data["data"]).then(new_data => {
+            }).then(data => data.json()).then(data => data["data"]).then(new_data => {
                 time = new_data["time"];
                 raw_data = new_data["train"].flat(Infinity);
+                charts.two.clear()
+                charts.two.update()
+                // console.log("made it through the pipeline!");
+                // console.log(time);
+                // console.log(raw_data);
 
                 let chart_data_format_y = raw_data.map(value => {
                     return {"y": value}
@@ -121,13 +151,30 @@ function update_chart(chart_number) {
                     return {"x": value}
                 });
 
+                // print(chart_data_format_y);
+                // console.log(total_stand_data)
                 let chart_data_format = []
-
-                for (let i = 0; i < chart_data_format_x.length; i++) {
-                    chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                let initial_val = total_exercise_data.length > 0
+                if (initial_val) {
+                    console.log(total_exercise_data)
+                    let final_obj = total_exercise_data[total_exercise_data.length - 1];
+                    console.log(final_obj);
+                    // console.log(total_exercise_data);
+                    let final_time = final_obj.x
+                    arr_and_item = time.indexOf(final_time);
+                    // console.log(arr_and_item);
+                    for (let i =  arr_and_item.id; i < chart_data_format_x.length; i++) {
+                        chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                    }
+                } else {
+                    for (let i = 0; i < chart_data_format_x.length; i++) {
+                        chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
+                    }
+                    total_exercise_data = chart_data_format;
                 }
-                charts.two.data.datasets[0].data = total_exercise_data.concat(chart_data_format);
-                total_exercise_data = total_exercise_data.concat(chart_data_format);
+                // console.log(total_stand_data.concat(chart_data_format));
+                charts.two.data.datasets[0].data = (initial_val) ? total_exercise_data : total_exercise_data.concat(chart_data_format);
+                total_exercise_data =  (initial_val) ? total_exercise_data.concat(chart_data_format) : chart_data_format;
                 charts.two.update();
             });
             break;

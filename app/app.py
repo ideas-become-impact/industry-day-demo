@@ -14,7 +14,7 @@ ui: FlaskUI = FlaskUI(app=app, server="flask", width=500, height=500)
 
 push_data = True
 
-com_port = "COM12"
+com_port = "COM4"
 
 ser = serial.Serial(com_port, 115200, timeout=1)
 
@@ -85,8 +85,10 @@ def rest_button() -> Response:
 
     if request.method == "POST":
         current_state = request.get_json()["collect"]
-        if current_state["collect"]:
+        if current_state:
+            # print("Calling!")
             stand_dataset = run.rest_button_clicked(ser, stand_dataset)
+            # print("Returning to javascript!")
             return jsonify({"data": stand_dataset})
 
     return jsonify([])
@@ -98,7 +100,8 @@ def exercise_button() -> Response:
 
     if request.method == "POST":
         current_state = request.get_json()["collect"]
-        if current_state["collect"]:
+        # print(current_state)
+        if current_state:
             exercise_dataset = run.exercise_button_clicked(ser, exercise_dataset)
             return jsonify({"data": exercise_dataset})
 
@@ -180,15 +183,6 @@ def test() -> str:
     return render_template("test.html")
 
 
-@app.route("/api/test", methods=["GET"])
-def exercise_status():
-    """
-    API endpoint that returns the current exercise state.
-    """
-    # TODO: replace with your real logic returning 0 or 1
-    return jsonify({"exercise": random.choice([0, 1])})
-
-
 @app.route("/predict", methods=["POST", "GET"])
 def predict_route() -> Response:
     global weights, bias
@@ -205,7 +199,7 @@ def predict_route() -> Response:
 
 if __name__ == "__main__":
     try:
-        app.run(debug=True)
+        app.run(debug=True, use_reloader=False)
     finally:
         ser.close()
     # ui.run()

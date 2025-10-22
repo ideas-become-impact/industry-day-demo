@@ -6,7 +6,7 @@ const imgEl = document.getElementById("exercise-image");
 
 async function updateExerciseStatus() {
     try {
-        const url = (window && window.EXERCISE_URL) ? window.EXERCISE_URL : "/api/test";
+        const url = "/predict";
         const response = await fetch(url);
         const data = await response.json();
         const value = data.exercise;
@@ -43,6 +43,8 @@ async function updateExerciseStatus() {
 async function can_predict() {
     let is_available = true;
 
+    console.log("training");
+
     await fetch("/train", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
@@ -50,9 +52,10 @@ async function can_predict() {
             }).then(data => data.json()).then(data => {
         if (data.ready) {
             prediction_state = true;
+            console.log("ready!");
         }
     });
-
+    
     if (prediction_state) {
         imgEl.style.display = "block";
     }

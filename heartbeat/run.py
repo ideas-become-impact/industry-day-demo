@@ -8,7 +8,7 @@ def rest_button_clicked(ser, training_dict):
     """
     add this to existing function
     """
-    training_dict = get_heartbeat.get_heartbeat(ser, training_dict, 1)
+    training_dict = heartbeat.get_heartbeat.get_heartbeat(ser, training_dict, 1)
     return training_dict
 
 
@@ -16,7 +16,7 @@ def exercise_button_clicked(ser, training_dict):
     """
     add this to existing function
     """
-    training_dict = get_heartbeat.get_heartbeat(ser, training_dict, 2)
+    training_dict = heartbeat.get_heartbeat.get_heartbeat(ser, training_dict, 2)
     return training_dict
 
 
@@ -29,7 +29,7 @@ def collect_and_train(ser, stand_dataset, exercise_dataset):
     X = np.array(train)  # 10+10 samples, each 29 features
     y = np.array(output)  # 10+10 labels
 
-    costs, W, b = model.train(X, y)
+    costs, W, b = heartbeat.model.train(X, y)
 
     return costs, W, b
 
