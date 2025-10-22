@@ -31,6 +31,14 @@ def home() -> str:
 
     return render_template("home.html")
 
+@app.route("/test")
+def test() -> str:
+    """
+    Returns the generated string of the html from test.html
+    """
+
+    return render_template("test.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)

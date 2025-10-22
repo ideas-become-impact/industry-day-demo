@@ -8,31 +8,31 @@ const labels = [' hello ', 'a', 'b', 'c', 'd']
 const data = fetch("/data_route")
     .then(data => data.json())
     .then(data => {
-const plottable_data = {
-    labels: labels,
-    datasets: [{
-        label: "waow",
-        backgroundColor: "#dfad8a",
-        borderColor: "rgb(255, 0, 0)",
-        data: data
-    }]
-}
+        const plottable_data = {
+            labels: labels,
+            datasets: [{
+                label: "waow",
+                backgroundColor: "#dfad8a",
+                borderColor: "rgb(255, 0, 0)",
+                data: data
+            }]
+        }
 
-const config = {
-    type: 'line',
-    data: data,
-    options: { maintainAspectRatio: false }
-};
+        const config = {
+            type: 'line',
+            data: data,
+            options: { maintainAspectRatio: false }
+        };
 
-const myChart = new Chart(
-    document.getElementById('graph_1_image'),
-    plottable_data,
-);
+        const myChart = new Chart(
+            document.getElementById('graph_1_image'),
+            plottable_data,
+        );
 
-const myChart_2 = new Chart(
-    document.getElementById('graph_2_image'),
-    plottable_data,
-);
+        const myChart_2 = new Chart(
+            document.getElementById('graph_2_image'),
+            plottable_data,
+        );
     })
     .catch(err => console.error(err))
 
@@ -49,7 +49,7 @@ function turnOnGraph(caller) {
 
         graph_1.style.display = "flex";
         graph_2.style.display = "none";
-        
+
     } else {
         caller.parentNode.style.flexGrow = 2;
         caller.parentNode.style.flexShrink = 0;
@@ -73,5 +73,11 @@ function turnOnGraph(caller) {
 }
 
 
+function goToTest() {
+    window.location.href = "test.html";
+}
 
+function goToHome() {
+    window.location.href = "home.html";
+}
 
