@@ -5,11 +5,16 @@ description = "Initial Machine Learning Demo for Industry Day 2025."
 authors = ["Your Name <you@example.com>"]
 license = "MIT"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
 flask = "^3.1.2"
 flaskwebgui = "^1.1.7"
+numpy = "^2.3.4"
+matplotlib = "^3.10.7"
+pyserial = "^3.5"
+pyqtgraph = "^0.13.7"
 
 
 [tool.poetry.group.dev.dependencies]
