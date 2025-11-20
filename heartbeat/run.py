@@ -21,11 +21,18 @@ def exercise_button_clicked(ser, training_dict):
 
 
 def collect_and_train(ser, stand_dataset, exercise_dataset):
+    rest_dict = rest_button_clicked(ser, stand_dataset)
+    exercise_dict = exercise_button_clicked(ser, exercise_dataset)
+    rest_train = rest_dict["train"]
+    rest_output = rest_dict["output"]
+    exercise_train = exercise_dict["train"]
+    exercise_output = exercise_dict["output"]
 
-    rest_train, rest_output = rest_button_clicked(ser, stand_dataset)
-    exercise_train, exercise_output = exercise_button_clicked(ser, exercise_dataset)
-    train = rest_train + exercise_train
+    train = sum(rest_train, []) + sum(exercise_train, [])
     output = rest_output + exercise_output
+    print(train)
+    print(output)
+
     X = np.array(train)  # 10+10 samples, each 29 features
     y = np.array(output)  # 10+10 labels
 

@@ -14,7 +14,7 @@ ui: FlaskUI = FlaskUI(app=app, server="flask", width=500, height=500)
 
 push_data = True
 
-com_port = "COM4"
+com_port = "COM3"
 
 ser = serial.Serial(com_port, 115200, timeout=1)
 
@@ -50,7 +50,7 @@ def data_route() -> Response:
     #     9,
     #     10,
     # ]  # heartbeat.get_heartbeat.get_heartbeat("COM9")
-    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.05)
+    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.005)
 
     times = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     if request.method == "POST":
@@ -65,7 +65,7 @@ def data_route() -> Response:
 @app.route("/arduino-read-data", methods=["GET"])
 def arduino_read_data() -> Response:
 
-    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.05)
+    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.005)
 
     return jsonify({"data": new_data})
 
@@ -142,7 +142,7 @@ def jumping_data_route() -> Response:
     #     9,
     #     10,
     # ]
-    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.05)
+    new_data = get_heartbeat.get_latest_heartbeat(ser, 20, 0, 0.005)
     times = np.linspace(0, 1, len(new_data))
     if request.method == "POST":
         added_time = request.get_json()["elapsed_time"]
@@ -157,10 +157,17 @@ def jumping_data_route() -> Response:
 def recv_output() -> Response:
     """
     a"""
-    global push_data
+
+    global push_data, stand_dataset, exercise_dataset
     if request.method == "POST":
         data = request.get_json()
         push_data = data["push_data"]
+        graph = data["graph"]
+        match graph:
+            case 1:
+                stand_dataset = get_heartbeat.initialize_data_holding_dict()
+            case 2:
+                exercise_dataset = get_heartbeat.initialize_data_holding_dict()
 
     return jsonify([])
 

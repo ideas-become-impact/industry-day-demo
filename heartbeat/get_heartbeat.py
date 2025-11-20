@@ -18,7 +18,7 @@ def get_heartbeat(ser: serial.Serial, data_holding_dict: dict, button_clicked: i
 
     # train: list[list[int]] = []
     # output = []
-    time.sleep(1)
+    # time.sleep(0.1)
 
     # create a new train set (array) every 3 seconds
     if not data_holding_dict["train"]:
@@ -36,13 +36,14 @@ def get_heartbeat(ser: serial.Serial, data_holding_dict: dict, button_clicked: i
             data_holding_dict["time"].append(
                 time.time() - data_holding_dict["state"]["base_time"]
             )
-            print("time: ", data_holding_dict["time"])
+            # print("time: ", data_holding_dict["time"])
             hb_parts = line.split(",")  # ["512", "530", ...]
-            print("values: ", sum(data_holding_dict["train"], []))
-            data_holding_dict["train"][-1].append(int(hb_parts[-1]))
-            if len(data_holding_dict["train"][-1]) == 29:
-                data_holding_dict["state"]["list_full"] = True
-            time.sleep(0.005)
+            if hb_parts:
+                # print("values: ", sum(data_holding_dict["train"], []))
+                data_holding_dict["train"][-1].append(int(hb_parts[-1]))
+                if len(data_holding_dict["train"][-1]) == 29:
+                    data_holding_dict["state"]["list_full"] = True
+                time.sleep(0.005)
 
             if data_holding_dict["state"]["list_full"]:
                 data_holding_dict["train"].append([])

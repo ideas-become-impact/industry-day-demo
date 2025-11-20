@@ -7,9 +7,11 @@ const button_2 = document.getElementById("button_2")
 const data_colors = {
     backgroundColor: "#dfad8a",
     borderColor: "rgb(255, 0, 0)",
-    pointBorderWidth: 2,
-    pointRadius: 2,
-    // radius: 0,
+    borderWidth: 3,
+    pointBorderWidth: 0,
+    pointRadius: 0,
+    pointHoverRadius: 6,
+    tension: 0.4,
 }
 
 let start_time = performance.now()
@@ -19,9 +21,15 @@ let total_exercise_data = []
 
 const options = {
     maintainAspectRatio: false,
+    responsive: true,
+    animation: {
+        duration: 0
+    },
     scales: {
       x: {
-        type: 'linear'
+        type: 'linear',
+        min: 0,
+        max: 30
       },
       y: {
         type: 'linear',
@@ -126,7 +134,7 @@ function update_chart(chart_number) {
                                     // console.log(total_stand_data.concat(chart_data_format));
 
                 charts.one.data.datasets[0].data = (initial_val) ? total_stand_data : total_stand_data.concat(chart_data_format);
-                total_stand_data =  (initial_val) ? total_stand_data.concat(chart_data_format) : chart_data_format;
+                total_stand_data = (initial_val) ? total_stand_data.concat(chart_data_format) : chart_data_format;
                 charts.one.update();
             });
             break;
@@ -156,14 +164,14 @@ function update_chart(chart_number) {
                 let chart_data_format = []
                 let initial_val = total_exercise_data.length > 0
                 if (initial_val) {
-                    console.log(total_exercise_data)
+                    // console.log(total_exercise_data)
                     let final_obj = total_exercise_data[total_exercise_data.length - 1];
-                    console.log(final_obj);
+                    // console.log(final_obj);
                     // console.log(total_exercise_data);
                     let final_time = final_obj.x
                     arr_and_item = time.indexOf(final_time);
                     // console.log(arr_and_item);
-                    for (let i =  arr_and_item.id; i < chart_data_format_x.length; i++) {
+                    for (let i =  arr_and_item; i < chart_data_format_x.length; i++) {
                         chart_data_format.push({...chart_data_format_x[i], ...chart_data_format_y[i]});
                     }
                 } else {
@@ -174,7 +182,7 @@ function update_chart(chart_number) {
                 }
                 // console.log(total_stand_data.concat(chart_data_format));
                 charts.two.data.datasets[0].data = (initial_val) ? total_exercise_data : total_exercise_data.concat(chart_data_format);
-                total_exercise_data =  (initial_val) ? total_exercise_data.concat(chart_data_format) : chart_data_format;
+                total_exercise_data = (initial_val) ? total_exercise_data.concat(chart_data_format) : chart_data_format;
                 charts.two.update();
             });
             break;
@@ -184,7 +192,7 @@ function update_chart(chart_number) {
 function turnOnGraph(caller) {
     id = caller.id;
 
-    on_req = { "push_data": true }
+    on_req = { "push_data": true, "graph": id[id.length - 1] === "1" ? 1 : 2 }
     fetch("/recv-output", {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
@@ -199,7 +207,6 @@ function turnOnGraph(caller) {
 
         graph_1.style.display = "flex";
         graph_2.style.display = "none";
-        total_exercise_data = []
         
     } else {
         caller.parentNode.style.flexGrow = 2;
@@ -209,7 +216,6 @@ function turnOnGraph(caller) {
         graph_1.parentNode.style.flexGrow = 0;
 
         graph_1.style.display = "none";
-        total_stand_data = []
         graph_2.style.display = "flex";
     }
 
@@ -231,14 +237,8 @@ function turnOnGraph(caller) {
 }
 
 function turnOffGraph(caller) {
-    all_children = caller.parentNode.children;
-
-    off_req = { "push_data": false }
-    fetch("/recv-output", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(off_req)
-    });
+    let all_children = caller.parentNode.children;
+    let current_child = -1;
     for (const child of all_children) {
         if (child.classList.contains("collection")) {
             child.style.display = "flex";
@@ -247,11 +247,13 @@ function turnOffGraph(caller) {
         if (child.classList.contains("graph")) {
             child.style.display = "none";
             if (child.id == "graph_1") {
+                current_child = 1;
                 charts.one.config.data.datasets[0].data = [];
                 total_stand_data = []
                 start_time = performance.now() / 1000.0;
                 charts.one.update();
             } else if (child.id == "graph_2") {
+                current_child = 2;
                 charts.two.config.data.datasets[0].data = [];
                 total_exercise_data = []
                 start_time = performance.now() / 1000.0;
@@ -259,6 +261,13 @@ function turnOffGraph(caller) {
             }
         }
     }
+
+    off_req = { "push_data": false, "graph": current_child };
+    fetch("/recv-output", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(off_req)
+    });
 }
 
 setInterval(() => {
@@ -273,5 +282,4 @@ setInterval(() => {
             //
         }
     }
-}, 1000);
-
+}, 100);
