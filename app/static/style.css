@@ -3,12 +3,31 @@ body {
     display: block;
 }
 
+.index-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
 .main {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin-top: 20%;
+}
+
+.home-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10%;
+}
+
+a {
+  color: black;
+  text-decoration: none; /* no underline */
 }
 
 .foot {
